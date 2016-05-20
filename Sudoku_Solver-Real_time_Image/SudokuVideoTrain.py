@@ -18,44 +18,19 @@ while(1):
 			break
 		img=cv2.GaussianBlur(img,(5,5),0)
 		frame=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-		#frame=cv2.Laplacian(frame,cv2.CV_32F)
-		#frame=cv2.adaptiveThreshold(frame,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,11,2)
 		kernel=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(11,11))
 		close=cv2.morphologyEx(frame,cv2.MORPH_CLOSE,kernel)
-		#cv2.imshow("close",close)
 		div=np.float32(frame)/(close)
 		res=np.uint8(cv2.normalize(div,div,0,255,cv2.NORM_MINMAX))
-		#print div
-		#print frame
 		res2=cv2.cvtColor(res,cv2.COLOR_GRAY2BGR)
 		thresh=cv2.adaptiveThreshold(res,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,11,2)
 		#cv2.imshow("thresh",thresh)
 		_,cnt,hr = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-		#frame=cv2.erode(frame,(8,8),iterations2)
-		#frame=np.uint8(frame)
-		#edges=cv2.Canny(frame,100,200)
-		#frame=cv2.bilateralFilter(frame,9,75,75)
-		#cv2.imshow("edges",edges)
-		#lines=cv2.HoughLinesP(edges,200,np.pi/180,100,100)
-		#img=cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
-		#print lines
-		#cv2.imshow("res2",res2)
-		#cv2.waitKey(0)
-		"""for i in range(0,len(lines)):
-			x1,y1,x2,y2=lines[i][0][0],lines[i][0][1],lines[i][0][2],lines[i][0][3]
-			cv2.line(imgh,(x1,y1),(x2,y2),(0,255,0),2)
-		cv2.imshow("Frame",frame)
-		cv2.imshow("img",imgh)
-		cv2.waitKey(0)"""
-		#frame!=frame
-		#imgh=cv2.inRange(imgh,(0,255,0),(0,255,0))
 		keys = [i for i in range(48,58)]
-		#cv2.normalize(frame,frame,0,255,cv2.NORM_MINMAX)
 		area=0
 		temparea=0
 		p=0
 		bestapprox=None
-		#epsilon=0.1*cv2.arcLength(cnt[0],True)
 		for i in range(len(cnt)):
 			temparea=cv2.contourArea(cnt[i])
 			if temparea>1000:
@@ -66,44 +41,15 @@ while(1):
 					area=temparea
 					bestapprox=approx
 					p=i
-		#epsilon=0.1*cv2.arcLength(cnt[p],True)
-		#approx=cv2.approxPolyDP(cnt[p],epsilon,True)
-		#print area
 		box=cnt[p]
 		img=cv2.polylines(img,[bestapprox],True,(0,255,0),3)
 		cv2.drawContours(img,cnt,p,(255,0,0),2)
 		cv2.imshow("frame",img)
 		(x,y)=thresh.shape
 		mask=np.zeros((x,y),np.uint8)
-
-		"""rect=cv2.minAreaRect(cnt[p])
-		box= cv2.boxPoints(rect)
-		box=np.float32(box)
-		print rect,box
-		#cv2.drawContours(img,[box],0,(0,0,255),2)
-		nw=np.float32([[450,450],[0,450],[0,0],[45MU0,0]])
-		M=cv2.getPerspectiveTransform(box,nw)
-		newimg=cv2.warpPerspective(img,M,(450,450))
-		"""
 		mask=cv2.drawContours(mask,cnt,p,255,-1)
 		mask=cv2.drawContours(mask,cnt,p,0,2)
-		#cv2.imshow("mask",mask)
-		#imgh=cv2.bitwise_and(mask,imgh)
-		#imgh=cv2.morphologyEx(imgh,cv2.MORPH_OPEN,(20,20))
 		masked=cv2.bitwise_and(mask,res)
-		#cv2.imshow("masked",masked)
-		#cv2.imshow("img",newimg)
-		#cv2.waitKey(0)
-		"""
-		#cv2.imshow("cropped",img)
-		cv2.waitKey(0)
-		sobely=cv2.Sobel(imgh,cv2.CV_32F,1,0)
-		sobely=cv2.convertScaleAbs(sobely)
-		sobelx=cv2.Sobel(imgh,cv2.CV_64F,0,2)
-		sobelx=cv2.convertScaleAbs(sobelx)
-		sobel=cv2.bitwise_and(sobelx,sobely)
-		cv2.imshow("sobely",sobel)
-		cv2.imshow("sobelx",sobelx)"""
 		kernelx = cv2.getStructuringElement(cv2.MORPH_RECT,(2,10))
 
 		dx = cv2.Sobel(masked,cv2.CV_16S,1,0)
@@ -122,8 +68,6 @@ while(1):
 		close = cv2.morphologyEx(close,cv2.MORPH_CLOSE,None,iterations = 2)
 		closex = close.copy()
 		#cv2.imshow("closex",closex)
-
-
 		kernely=cv2.getStructuringElement(cv2.MORPH_RECT,(10,2))
 		dy=cv2.Sobel(masked,cv2.CV_16S,0,2)
 		dy=cv2.convertScaleAbs(dy)
@@ -144,11 +88,6 @@ while(1):
 		grid=cv2.bitwise_and(closex,closey)
 		cv2.imshow("grid",grid)
 		_,contour, hier = cv2.findContours(grid,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
-		"""mask=np.zeros(mask.shape)
-		for i in contour:
-			cv2.drawContours(mask,i,0,255,-1)
-			cv2.imshow("mask",mask)
-			cv2.waitKey(0)"""
 		cent=[]
 		try:
 			for cnt in contour:
@@ -197,9 +136,6 @@ while(1):
 	cv2.imshow("img",f1g)
 	key=cv2.waitKey(0) & 0xff
 	if key==51:
-		#cv2.drawContours(output,cnt,-1,(255,0,0),2)
-		#cv2.imshow("output",output)
-		#cv2.waitKey(0)
 		count=0
 		stresp=[0,0,4,0,0,0,0,0,1,0,3,6,0,1,0,0,0,0,5,0,9,4,0,0,0,0,7,0,8,0,0,0,0,0,7,0,6,0,0,0,5,0,0,0,0,2,0,3,0,6,0,8,4,0,3,7,5,9,0,0,0,2,8,0,0,0,0,3,0,0,0,0,0,0,0,2,0,0,0,5,0]
 		for i in xrange(9):
